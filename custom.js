@@ -1,3 +1,5 @@
+/*Quiz2 by Luxis*/
+
 var header = document.getElementById('header');
 var content = document.getElementById('content-div');
 var footer = document.getElementById('footer');
@@ -20,8 +22,12 @@ function initializeQuiz() {
 /*Content logic*/
 
 function loadContent() {
-	loadQuestion();
-	loadButtons();
+	if(qCount < 5) {
+		loadQuestion();
+		loadButtons();
+	} else {
+		console.log('finished');
+	}
 }
 
 function loadPreviousContent() {
@@ -35,11 +41,22 @@ function loadNextContent() {
 	qCount++;
 }
 
+function submitAnswers() {
+	loadContent();
+}
+
 /*End of content logic*/
 
 /*Question logic*/
 
 function loadQuestion() {
+	var headline = document.createElement('h1');
+	headline.appendChild(document.createTextNode('Question' + (qCount+1)));
+	var question = document.createTextNode('This question JSON blabla' + qCount);
+	removeChildren(header);
+	removeChildren(content);
+	header.appendChild(headline);
+	content.appendChild(question);
 	console.log('question loaded');
 }
 
@@ -53,8 +70,14 @@ function loadButtons() {
 	} else if (qCount <= 0 && document.getElementById('back')) {
 		removeButton('back');
 	}
-	if(!document.getElementById('next')) {
+	if(qCount < 4 && !document.getElementById('next')) {
+		if(document.getElementById('submit')) {
+			removeButton('submit');
+		}
 		loadButton('next');
+	} else if (qCount >= 4) {
+		removeButton('next');
+		loadButton('submit');
 	}
 }
 
@@ -66,8 +89,11 @@ function loadButton(name) {
 	if(name === 'back') {		
 		button.addEventListener('click', loadPreviousContent);
 		footer.insertBefore(button, document.getElementById('next'));	
-	} else {
+	} else if (name === 'next') {
 		button.addEventListener('click', loadNextContent);
+		footer.appendChild(button);
+	} else if (name === 'submit') {
+		button.addEventListener('click', submitAnswers);
 		footer.appendChild(button);
 	}
 }
@@ -79,4 +105,12 @@ function removeButton(name) {
 
 /*End of button logic*/
 
+/*Misc functions*/
 
+function removeChildren(node) {
+	while(node.hasChildNodes()) {
+		node.removeChild(node.lastChild);
+	}
+}
+
+/*End of misc functions*/
